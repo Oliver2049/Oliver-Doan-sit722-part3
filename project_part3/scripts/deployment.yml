@@ -1,1 +1,79 @@
-# Your Solution
+# Write Kubernetes Deployment Script
+# Deployment Script for Book Catalog and Inventory Management Services
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-catalog
+  labels:
+    app: book-catalog
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: book-catalog
+  template:
+    metadata:
+      labels:
+        app: book-catalog
+    spec:
+      containers:
+        - name: book-catalog
+          image: oliver301.azurecr.io/book-catalog:1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PORT
+              value: "8000"
+            - name: DATABASE_URL
+              value: "postgresql://oliver_722_part3_user:aoN2388BKPqP3JABpQYThRzot8FoYSN4@dpg-criodclumphs73cnp5cg-a.oregon-postgres.render.com/oliver_722_part3"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-management
+  labels:
+    app: inventory-management
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: inventory-management
+  template:
+    metadata:
+      labels:
+        app: inventory-management
+    spec:
+      containers:
+        - name: inventory-management
+          image: oliver301.azurecr.io/inventory-management:1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PORT
+              value: "8000"
+            - name: DATABASE_URL
+              value: "postgresql://oliver_722_part3_user:aoN2388BKPqP3JABpQYThRzot8FoYSN4@dpg-criodclumphs73cnp5cg-a.oregon-postgres.render.com/oliver_722_part3"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-catalog
+spec:
+  selector:
+    app: book-catalog
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-management
+spec:
+  selector:
+    app: inventory-management
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 81
+      targetPort: 8000
